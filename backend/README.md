@@ -145,30 +145,48 @@ Ada 2 jenis user dalam sistem ini:
 
 ## 🔑 Cara Membuat Akun Admin
 
-Ada 2 cara untuk membuat akun admin:
+**PENTING**: Akun admin HANYA dapat dibuat melalui Postman atau API tools lainnya, TIDAK melalui website.
 
-### Cara 1: Melalui API (Recommended)
+### Langkah-langkah Registrasi Admin via Postman:
 
-Gunakan endpoint `/api/auth/register-admin` dengan menyertakan admin key yang sesuai:
+1. **Buka Postman** dan buat request baru dengan konfigurasi berikut:
+   - **Method**: POST
+   - **URL**: `http://localhost:5000/api/auth/register-admin`
+   - **Headers**: 
+     - `Content-Type: application/json`
+   - **Body** (raw JSON):
+   ```json
+   {
+     "email": "admin@sultanmuda.com",
+     "password": "password123",
+     "adminKey": "sultanmuda_admin_key_2024"
+   }
+   ```
 
-```bash
-curl -X POST http://localhost:5000/api/auth/register-admin \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@sultanmuda.com",
-    "password": "password123",
-    "adminKey": "sultanmuda_admin_key_2024"
-  }'
-```
+2. **Klik Send** untuk mengirim request
 
-Atau gunakan halaman `/auth` di frontend, pilih tab **"Admin"** untuk registrasi admin.
+3. Jika berhasil, Anda akan menerima response seperti ini:
+   ```json
+   {
+     "success": true,
+     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+     "user": {
+       "id": "...",
+       "email": "admin@sultanmuda.com",
+       "role": "admin"
+     }
+   }
+   ```
+
+4. **Login Admin**: Setelah registrasi berhasil, admin dapat login melalui website di `/auth` menggunakan email dan password yang telah didaftarkan. Sistem akan otomatis mengarahkan ke Dashboard Admin.
 
 **PENTING**: 
 - Admin key harus sama dengan `ADMIN_REGISTRATION_KEY` di file `.env`
 - Rahasiakan admin key ini dan jangan share ke sembarang orang!
 - Ubah admin key default dengan nilai yang aman!
+- Admin TIDAK dapat mendaftar melalui website, hanya via API/Postman
 
-### Cara 2: Manual via MongoDB (Alternatif)
+### Cara Alternatif: Manual via MongoDB
 
 Jika ingin membuat admin langsung melalui database MongoDB:
 
@@ -187,7 +205,7 @@ db.users.insertOne({
 })
 ```
 
-**Catatan**: Cara manual memerlukan password yang sudah di-hash. Lebih mudah menggunakan Cara 1.
+**Catatan**: Cara manual memerlukan password yang sudah di-hash. Lebih mudah menggunakan cara via Postman.
 
 ## 🛠️ Teknologi
 

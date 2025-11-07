@@ -43,6 +43,12 @@ export const authAPI = {
       body: JSON.stringify({ email, password, umkmData }),
     }),
 
+  registerAdmin: (email: string, password: string, adminKey: string) =>
+    apiCall('/auth/register-admin', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, adminKey }),
+    }),
+
   getMe: () => apiCall('/auth/me'),
 };
 

@@ -62,6 +62,58 @@ exports.register = async (req, res) => {
   }
 };
 
+// @desc    Register Admin user
+// @route   POST /api/auth/register-admin
+// @access  Public (but should be protected in production)
+exports.registerAdmin = async (req, res) => {
+  try {
+    const { email, password, adminKey } = req.body;
+
+    // Verify admin registration key (add this to .env)
+    if (adminKey !== process.env.ADMIN_REGISTRATION_KEY) {
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid admin registration key',
+      });
+    }
+
+    // Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already registered',
+      });
+    }
+
+    // Create admin user (no UMKM required)
+    const user = await User.create({
+      email,
+      password,
+      role: 'admin',
+    });
+
+    const token = generateToken(user._id);
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error('Admin registration error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error registering admin',
+      error: error.message,
+    });
+  }
+};
+
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public

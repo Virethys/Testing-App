@@ -34,7 +34,10 @@ MONGODB_URI=mongodb://localhost:27017/sultanmuda
 JWT_SECRET=ganti-dengan-secret-key-anda
 JWT_EXPIRE=7d
 NODE_ENV=development
+ADMIN_REGISTRATION_KEY=sultanmuda_admin_key_2024
 ```
+
+**PENTING**: Ubah `JWT_SECRET` dan `ADMIN_REGISTRATION_KEY` dengan nilai yang aman!
 
 4. **Jalankan server**
 
@@ -81,7 +84,8 @@ backend/
 ## 📡 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register UMKM baru
+- `POST /api/auth/register` - Register UMKM baru (dengan data UMKM)
+- `POST /api/auth/register-admin` - Register Admin baru (memerlukan admin key)
 - `POST /api/auth/login` - Login
 - `GET /api/auth/me` - Get user profile (Protected)
 
@@ -118,24 +122,72 @@ Authorization: Bearer <your-token-here>
 
 ## 👤 User Roles
 
-1. **UMKM** - Pemilik UMKM yang bisa mengelola profile dan produk sendiri
-2. **Admin** - Moderator yang bisa approve/reject UMKM dan melihat semua data
+Ada 2 jenis user dalam sistem ini:
 
-## 📝 Data Dummy
+### 1. UMKM (User)
+- **Registrasi**: Harus mendaftar dengan data UMKM lengkap melalui form registrasi
+- **Status awal**: "pending" dan menunggu persetujuan admin
+- **Akses**: Dashboard UMKM (`/dashboard`)
+- **Fitur**:
+  - Melihat dan mengedit profil UMKM (nama, logo, deskripsi, kontak)
+  - Mengelola produk sendiri (tambah, edit, hapus)
+  - Status UMKM akan ditampilkan (pending/approved/rejected)
 
-Untuk membuat user admin pertama kali, gunakan MongoDB shell atau Compass:
+### 2. Admin
+- **Registrasi**: Tidak memerlukan UMKM, hanya email dan password + admin key
+- **Akses**: Dashboard Admin (`/admin/dashboard`)
+- **Fitur**:
+  - Melihat semua UMKM (approved, pending, rejected)
+  - Menyetujui atau menolak pendaftaran UMKM baru
+  - Filter UMKM berdasarkan status dan pencarian
+  - Melihat statistik dashboard (total UMKM, approved, pending, rejected)
+  - Akses penuh ke semua data UMKM dan produk
+
+## 🔑 Cara Membuat Akun Admin
+
+Ada 2 cara untuk membuat akun admin:
+
+### Cara 1: Melalui API (Recommended)
+
+Gunakan endpoint `/api/auth/register-admin` dengan menyertakan admin key yang sesuai:
+
+```bash
+curl -X POST http://localhost:5000/api/auth/register-admin \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@sultanmuda.com",
+    "password": "password123",
+    "adminKey": "sultanmuda_admin_key_2024"
+  }'
+```
+
+Atau gunakan halaman `/auth` di frontend, pilih tab **"Admin"** untuk registrasi admin.
+
+**PENTING**: 
+- Admin key harus sama dengan `ADMIN_REGISTRATION_KEY` di file `.env`
+- Rahasiakan admin key ini dan jangan share ke sembarang orang!
+- Ubah admin key default dengan nilai yang aman!
+
+### Cara 2: Manual via MongoDB (Alternatif)
+
+Jika ingin membuat admin langsung melalui database MongoDB:
 
 ```javascript
-// Insert admin user (password: admin123)
+// Login ke MongoDB shell
+use sultanmuda
+
+// Insert admin user
+// Note: Password harus di-hash dulu menggunakan bcrypt
+// Contoh untuk password "admin123":
 db.users.insertOne({
   email: "admin@sultanmuda.com",
-  password: "$2a$10$YourHashedPasswordHere",
+  password: "$2a$10$xJzQ6oS.zV8yQJ.8MqN5G.YdWvYJH8P4x0Mz3Z2LxK7L6N5H8P4x0",
   role: "admin",
   createdAt: new Date()
 })
 ```
 
-Atau buat melalui API dengan mengganti role di code sementara.
+**Catatan**: Cara manual memerlukan password yang sudah di-hash. Lebih mudah menggunakan Cara 1.
 
 ## 🛠️ Teknologi
 
@@ -155,6 +207,7 @@ Atau buat melalui API dengan mengganti role di code sementara.
 | JWT_SECRET | Secret key untuk JWT | - |
 | JWT_EXPIRE | Token expiration time | 7d |
 | NODE_ENV | Environment mode | development |
+| ADMIN_REGISTRATION_KEY | Kunci rahasia untuk registrasi admin | - |
 
 ## 🐛 Troubleshooting
 

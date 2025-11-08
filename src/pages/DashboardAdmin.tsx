@@ -74,7 +74,7 @@ const DashboardAdmin = () => {
     }
   };
 
-  const filteredUMKM = allUMKM.filter((umkm: any) => {
+  const filteredUMKM = (allUMKM || []).filter((umkm: any) => {
     const matchesSearch = umkm.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          umkm.kota.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || umkm.status === statusFilter;

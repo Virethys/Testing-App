@@ -22,6 +22,19 @@ const umkmSchema = new mongoose.Schema({
       'Perseorangan (Usia 17-40 Tahun)'
     ],
   },
+  kategori: {
+    type: String,
+    enum: [
+      'Kuliner',
+      'Fashion',
+      'Kerajinan',
+      'Teknologi',
+      'Jasa',
+      'Pertanian',
+      'Lainnya'
+    ],
+    default: 'Lainnya',
+  },
   dinas: {
     type: String,
     enum: [
@@ -61,6 +74,10 @@ const umkmSchema = new mongoose.Schema({
     facebook: String,
   },
   foto: {
+    type: String,
+    default: '/placeholder.svg',
+  },
+  banner: {
     type: String,
     default: '/placeholder.svg',
   },

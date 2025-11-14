@@ -81,9 +81,19 @@ const Auth = () => {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? 'Loading...' : 'Login'}
                 </Button>
-                <p className="text-xs text-muted-foreground text-center mt-4">
-                  Admin hanya dapat mendaftar melalui Postman atau API tools
-                </p>
+                <div className="mt-4 text-center space-y-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => navigate('/register')}
+                  >
+                    Daftar sebagai UMKM
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    Admin hanya dapat mendaftar melalui Postman atau API tools
+                  </p>
+                </div>
               </form>
             </CardContent>
           </Card>

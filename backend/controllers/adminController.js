@@ -1,5 +1,6 @@
 const UMKM = require('../models/UMKM');
 const User = require('../models/User');
+const AuditLog = require('../models/AuditLog');
 
 // @desc    Get all pending UMKMs
 // @route   GET /api/admin/umkm/pending
@@ -75,6 +76,15 @@ exports.approveUMKM = async (req, res) => {
     umkm.status = 'approved';
     await umkm.save();
 
+    // Create audit log
+    await AuditLog.create({
+      action: 'approve',
+      adminId: req.user._id,
+      adminEmail: req.user.email,
+      umkmId: umkm._id,
+      umkmName: umkm.nama,
+    });
+
     res.status(200).json({
       success: true,
       data: umkm,
@@ -106,6 +116,15 @@ exports.rejectUMKM = async (req, res) => {
     umkm.status = 'rejected';
     await umkm.save();
 
+    // Create audit log
+    await AuditLog.create({
+      action: 'reject',
+      adminId: req.user._id,
+      adminEmail: req.user.email,
+      umkmId: umkm._id,
+      umkmName: umkm.nama,
+    });
+
     res.status(200).json({
       success: true,
       data: umkm,
@@ -131,6 +150,12 @@ exports.getStats = async (req, res) => {
     const rejectedUMKM = await UMKM.countDocuments({ status: 'rejected' });
     const totalUsers = await User.countDocuments({ role: 'umkm' });
 
+    // Get category statistics
+    const categoryStats = await UMKM.aggregate([
+      { $match: { status: 'approved' } },
+      { $group: { _id: '$kategori', count: { $sum: 1 } } },
+    ]);
+
     res.status(200).json({
       success: true,
       data: {
@@ -139,12 +164,39 @@ exports.getStats = async (req, res) => {
         pendingUMKM,
         rejectedUMKM,
         totalUsers,
+        categoryStats,
       },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Error fetching statistics',
+      error: error.message,
+    });
+  }
+};
+
+// @desc    Get audit logs
+// @route   GET /api/admin/audit-logs
+// @access  Private (Admin only)
+exports.getAuditLogs = async (req, res) => {
+  try {
+    const { limit = 50 } = req.query;
+
+    const logs = await AuditLog.find()
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .exec();
+
+    res.status(200).json({
+      success: true,
+      count: logs.length,
+      data: logs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching audit logs',
       error: error.message,
     });
   }

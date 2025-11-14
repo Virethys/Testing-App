@@ -73,6 +73,28 @@ export const umkmAPI = {
     apiCall(`/umkm/${id}`, {
       method: 'DELETE',
     }),
+
+  uploadImage: async (id: string, type: 'foto' | 'banner', file: File) => {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_URL}/upload/${id}/${type}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Upload failed');
+    }
+
+    return data;
+  },
 };
 
 // Product API
@@ -119,4 +141,9 @@ export const adminAPI = {
     }),
 
   getStats: () => apiCall('/admin/stats'),
+  
+  getAuditLogs: (limit?: number) => {
+    const params = limit ? `?limit=${limit}` : '';
+    return apiCall(`/admin/audit-logs${params}`);
+  },
 };

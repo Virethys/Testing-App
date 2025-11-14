@@ -11,6 +11,8 @@ const authRoutes = require('./routes/auth');
 const umkmRoutes = require('./routes/umkm');
 const productRoutes = require('./routes/product');
 const adminRoutes = require('./routes/admin');
+const debugRoutes = require('./routes/debug');
+const uploadRoutes = require('./routes/upload');
 
 const app = express();
 
@@ -19,8 +21,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static('uploads'));
+
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sultanmuda', {
+mongoose.connect("mongodb://127.0.0.1:27017/ken?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.8" || 'mongodb://localhost:27017/sultanmuda', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -32,6 +37,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/umkm', umkmRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/debug', debugRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -10,7 +10,7 @@ const {
 const { protect, authorize } = require('../middleware/auth');
 
 router.get('/', getAllUMKM);
-router.get('/my/profile', protect, authorize('umkm'), getMyUMKM);
+router.get('/my/profile', protect, authorize('umkm', 'admin'), getMyUMKM);
 router.get('/:id', getUMKM);
 router.put('/:id', protect, authorize('umkm', 'admin'), updateUMKM);
 router.delete('/:id', protect, authorize('umkm', 'admin'), deleteUMKM);

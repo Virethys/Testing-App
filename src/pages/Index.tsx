@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Crown, Users, TrendingUp, Award, ChevronRight } from 'lucide-react';
+import { Users, TrendingUp, Award, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { umkmAPI } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import UMKMCard from '@/components/UMKMCard';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import logo from '@/assets/logo.png';
 import {
   Carousel,
   CarouselContent,
@@ -37,6 +38,7 @@ import {
 const Index = () => {
   const [umkms, setUmkms] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -54,6 +56,9 @@ const Index = () => {
 
   useEffect(() => {
     fetchUMKMs();
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
   }, []);
 
   const fetchUMKMs = async () => {
@@ -140,9 +145,7 @@ const Index = () => {
               transition={{ delay: 0.2, type: 'spring' }}
               className="inline-flex items-center justify-center mb-6"
             >
-              <div className="bg-gradient-to-br from-primary to-primary-glow p-4 rounded-2xl shadow-lg">
-                <Crown className="h-16 w-16 text-primary-foreground" />
-              </div>
+              <img src={logo} alt="The Real Sultan" className="h-40 md:h-48 w-auto" />
             </motion.div>
 
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-primary-glow to-secondary bg-clip-text text-transparent">
@@ -163,12 +166,13 @@ const Index = () => {
                 </Button>
               </Link>
               
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                    Daftar UMKM
-                  </Button>
-                </DialogTrigger>
+              {!isLoggedIn && (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                      Daftar UMKM
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Daftar UMKM Baru</DialogTitle>
@@ -215,7 +219,7 @@ const Index = () => {
                       <Label htmlFor="operator">Operator Sultan Muda Sumatera Selatan 2025 *</Label>
                       <Select
                         value={formData.operator}
-                        onValueChange={(value) => setFormData({ ...formData, operator: value })}
+                        onValueChange={(value) => setFormData({ ...formData, operator: value, dinas: '' })}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Pilih operator" />
@@ -265,6 +269,128 @@ const Index = () => {
                             </SelectItem>
                             <SelectItem value="Dinas PPA">Dinas PPA</SelectItem>
                             <SelectItem value="DPMPTSP Sumsel">DPMPTSP Sumsel</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {formData.operator === 'Kabupaten/Kota Wilayah Sumatera Selatan' && (
+                      <div>
+                        <Label htmlFor="dinas">Kabupaten/Kota</Label>
+                        <Select
+                          value={formData.dinas}
+                          onValueChange={(value) => setFormData({ ...formData, dinas: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Pilih Kabupaten/Kota" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-[300px]">
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Banyuasin">
+                              Dinas Koperasi dan UKM Kabupaten Banyuasin
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Empat Lawang">
+                              Dinas Koperasi dan UKM Kabupaten Empat Lawang
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Lahat">
+                              Dinas Koperasi dan UKM Kabupaten Lahat
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Muara Enim">
+                              Dinas Koperasi dan UKM Kabupaten Muara Enim
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Musi Banyuasin">
+                              Dinas Koperasi dan UKM Kabupaten Musi Banyuasin
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Musi Rawas">
+                              Dinas Koperasi dan UKM Kabupaten Musi Rawas
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Ogan Ilir">
+                              Dinas Koperasi dan UKM Kabupaten Ogan Ilir
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Ogan Komering Ilir">
+                              Dinas Koperasi dan UKM Kabupaten Ogan Komering Ilir
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu">
+                              Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu Selatan">
+                              Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu Selatan
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu Timur">
+                              Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu Timur
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Penukal Abab Lematang Ilir">
+                              Dinas Koperasi dan UKM Kabupaten Penukal Abab Lematang Ilir
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kota Prabumulih">
+                              Dinas Koperasi dan UKM Kota Prabumulih
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kota Lubuklinggau">
+                              Dinas Koperasi dan UKM Kota Lubuklinggau
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kota Pagar Alam">
+                              Dinas Koperasi dan UKM Kota Pagar Alam
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kota Palembang">
+                              Dinas Koperasi dan UKM Kota Palembang
+                            </SelectItem>
+                            <SelectItem value="Dinas Koperasi dan UKM Kabupaten Musi Rawas Utara">
+                              Dinas Koperasi dan UKM Kabupaten Musi Rawas Utara
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {formData.operator === 'Stakeholder (Binaan Perusahaan/Lembaga)' && (
+                      <div>
+                        <Label htmlFor="dinas">Stakeholder (Binaan Perusahaan/Lembaga)</Label>
+                        <Select
+                          value={formData.dinas}
+                          onValueChange={(value) => setFormData({ ...formData, dinas: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Pilih Stakeholder" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-[300px]">
+                            <SelectItem value="Kemenkumham">
+                              Kemenkumham
+                            </SelectItem>
+                            <SelectItem value="Bank Indonesia">
+                              Bank Indonesia
+                            </SelectItem>
+                            <SelectItem value="Otoritas Jasa Keuangan">
+                              Otoritas Jasa Keuangan
+                            </SelectItem>
+                            <SelectItem value="Direktorat Jenderal Perbendaharaan (DJPb)">
+                              Direktorat Jenderal Perbendaharaan (DJPb)
+                            </SelectItem>
+                            <SelectItem value="Lembaga Jasa Keuangan Perbankan dan Non-perbankan">
+                              Lembaga Jasa Keuangan Perbankan dan Non-perbankan
+                            </SelectItem>
+                            <SelectItem value="Kamar Dagang dan Industri Indonesia (KADIN)">
+                              Kamar Dagang dan Industri Indonesia (KADIN)
+                            </SelectItem>
+                            <SelectItem value="Himpunan Pengusaha Muda Indonesia (HIPMI)">
+                              Himpunan Pengusaha Muda Indonesia (HIPMI)
+                            </SelectItem>
+                            <SelectItem value="Asosiasi Pengusaha Indonesia">
+                              Asosiasi Pengusaha Indonesia
+                            </SelectItem>
+                            <SelectItem value="Badan Standarisasi Nasional">
+                              Badan Standarisasi Nasional
+                            </SelectItem>
+                            <SelectItem value="Asosiasi Pendamping UMKM">
+                              Asosiasi Pendamping UMKM
+                            </SelectItem>
+                            <SelectItem value="BPOM">
+                              BPOM
+                            </SelectItem>
+                            <SelectItem value="Kementerian Agama Sumatera Selatan">
+                              Kementerian Agama Sumatera Selatan
+                            </SelectItem>
+                            <SelectItem value="Lainnya (Sebutkan di Keterangan)">
+                              Lainnya (Sebutkan di Keterangan)
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -327,6 +453,7 @@ const Index = () => {
                   </form>
                 </DialogContent>
               </Dialog>
+              )}
             </div>
           </motion.div>
         </div>
@@ -406,7 +533,7 @@ const Index = () => {
             <Carousel className="w-full">
               <CarouselContent>
                 {umkms.map((umkm: any) => (
-                  <CarouselItem key={umkm._id} className="md:basis-1/2 lg:basis-1/3">
+                  <CarouselItem key={umkm._id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
                     <UMKMCard
                       id={umkm._id}
                       nama={umkm.nama}

@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Pencil, Trash2, Save, X } from 'lucide-react';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658'];
@@ -21,6 +21,8 @@ const DashboardAdmin = () => {
   const [pending, setPending] = useState([]);
   const [allUMKM, setAllUMKM] = useState([]);
   const [stats, setStats] = useState<any>(null);
+  const [operatorStats, setOperatorStats] = useState<any>(null);
+  const [selectedOperator, setSelectedOperator] = useState<string>('global');
   const [auditLogs, setAuditLogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -36,7 +38,7 @@ const DashboardAdmin = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      await Promise.all([fetchPending(), fetchStats(), fetchAllUMKM(), fetchAuditLogs()]);
+      await Promise.all([fetchPending(), fetchStats(), fetchAllUMKM(), fetchAuditLogs(), fetchOperatorStats()]);
       setIsLoading(false);
     };
     fetchData();
@@ -81,6 +83,24 @@ const DashboardAdmin = () => {
       setAuditLogs([]);
     }
   };
+
+  const fetchOperatorStats = async (operator?: string) => {
+    try {
+      const response = await adminAPI.getOperatorStats(operator);
+      setOperatorStats(response.data);
+    } catch (error) {
+      console.error('Error fetching operator stats:', error);
+      toast({ variant: 'destructive', title: 'Error loading operator stats' });
+    }
+  };
+
+  useEffect(() => {
+    if (selectedOperator && selectedOperator !== 'global') {
+      fetchOperatorStats(selectedOperator);
+    } else {
+      fetchOperatorStats();
+    }
+  }, [selectedOperator]);
 
   const handleApprove = async (id: string) => {
     try {
@@ -365,6 +385,7 @@ const DashboardAdmin = () => {
             <TabsList>
               <TabsTrigger value="pending">Pending ({pending.length})</TabsTrigger>
               <TabsTrigger value="all">Semua UMKM</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="audit">Audit Log</TabsTrigger>
             </TabsList>
 
@@ -464,6 +485,120 @@ const DashboardAdmin = () => {
                   </Card>
                 )}
               </div>
+            </TabsContent>
+
+            <TabsContent value="analytics" className="space-y-6 mt-6">
+              {/* Operator Filter */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Filter Kategori Operator</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Select value={selectedOperator} onValueChange={setSelectedOperator}>
+                    <SelectTrigger className="w-full max-w-md">
+                      <SelectValue placeholder="Pilih operator untuk melihat detail" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="global">Semua Operator (Global)</SelectItem>
+                      <SelectItem value="Dinas Provinsi Sumatera Selatan">
+                        Dinas Provinsi Sumatera Selatan
+                      </SelectItem>
+                      <SelectItem value="Kabupaten/Kota Wilayah Sumatera Selatan">
+                        Kabupaten/Kota Wilayah Sumatera Selatan
+                      </SelectItem>
+                      <SelectItem value="Stakeholder (Binaan Perusahaan/Lembaga)">
+                        Stakeholder (Binaan Perusahaan/Lembaga)
+                      </SelectItem>
+                      <SelectItem value="Perseorangan (Usia 17-40 Tahun)">
+                        Perseorangan (Usia 17-40 Tahun)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
+
+              {/* Operator Statistics Pie Chart */}
+              {operatorStats?.operatorStats && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      {selectedOperator !== 'global'
+                        ? `Detail Pendaftaran - ${selectedOperator}` 
+                        : 'Statistik Pendaftaran Per Operator'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={400}>
+                      <PieChart>
+                        <Pie
+                          data={(selectedOperator !== 'global' ? operatorStats.detailStats : operatorStats.operatorStats)?.map((item: any, index: number) => ({
+                            name: item._id || 'Tidak Ada Data',
+                            value: item.count,
+                            color: COLORS[index % COLORS.length],
+                          }))}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent, value }) => 
+                            `${name}: ${value} (${(percent * 100).toFixed(1)}%)`
+                          }
+                          outerRadius={120}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {(selectedOperator !== 'global' ? operatorStats.detailStats : operatorStats.operatorStats)?.map((_: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Bar Chart */}
+              {operatorStats?.operatorStats && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      {selectedOperator !== 'global'
+                        ? `Perbandingan Pendaftaran - ${selectedOperator}` 
+                        : 'Perbandingan Pendaftaran Per Operator'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={400}>
+                      <BarChart
+                        data={(selectedOperator !== 'global' ? operatorStats.detailStats : operatorStats.operatorStats)?.map((item: any, index: number) => ({
+                          name: item._id || 'Tidak Ada Data',
+                          jumlah: item.count,
+                          color: COLORS[index % COLORS.length],
+                        }))}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="name" 
+                          angle={-45}
+                          textAnchor="end"
+                          height={100}
+                          interval={0}
+                        />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="jumlah" fill="#8884d8">
+                          {(selectedOperator !== 'global' ? operatorStats.detailStats : operatorStats.operatorStats)?.map((_: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             <TabsContent value="audit" className="space-y-4 mt-6">
@@ -726,21 +861,155 @@ const DashboardAdmin = () => {
               {/* Operator */}
               <div className="space-y-2">
                 <Label>Operator</Label>
-                <p className="text-muted-foreground">{selectedUMKM.operator}</p>
+                {isEditMode ? (
+                  <Select
+                    value={editData.operator || selectedUMKM.operator}
+                    onValueChange={(value) => handleEditChange('operator', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih operator" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Dinas Provinsi Sumatera Selatan">
+                        Dinas Provinsi Sumatera Selatan
+                      </SelectItem>
+                      <SelectItem value="Kabupaten/Kota Wilayah Sumatera Selatan">
+                        Kabupaten/Kota Wilayah Sumatera Selatan
+                      </SelectItem>
+                      <SelectItem value="Stakeholder (Binaan Perusahaan/Lembaga)">
+                        Stakeholder (Binaan Perusahaan/Lembaga)
+                      </SelectItem>
+                      <SelectItem value="Perseorangan (Usia 17-40 Tahun)">
+                        Perseorangan (Usia 17-40 Tahun)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <p className="text-muted-foreground">{selectedUMKM.operator}</p>
+                )}
               </div>
 
-              {/* Kategori */}
-              {selectedUMKM.kategori && (
+              {/* Conditional Dinas Selection */}
+              {isEditMode && (editData.operator || selectedUMKM.operator) === 'Dinas Provinsi Sumatera Selatan' && (
                 <div className="space-y-2">
-                  <Label>Kategori</Label>
-                  <p className="text-muted-foreground">{selectedUMKM.kategori}</p>
+                  <Label>Dinas *</Label>
+                  <Select
+                    value={editData.dinas || selectedUMKM.dinas || ''}
+                    onValueChange={(value) => handleEditChange('dinas', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih Dinas" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      <SelectItem value="Dinas Koperasi dan UKM">Dinas Koperasi dan UKM</SelectItem>
+                      <SelectItem value="Dinas Pertanian">Dinas Pertanian</SelectItem>
+                      <SelectItem value="Dinas Perikanan">Dinas Perikanan</SelectItem>
+                      <SelectItem value="Dinas Pariwisata dan Ekonomi Kreatif">Dinas Pariwisata dan Ekonomi Kreatif</SelectItem>
+                      <SelectItem value="Dinas Perdagangan">Dinas Perdagangan</SelectItem>
+                      <SelectItem value="Dinas Perindustrian">Dinas Perindustrian</SelectItem>
+                      <SelectItem value="Dinas Peternakan">Dinas Peternakan</SelectItem>
+                      <SelectItem value="Dinas Perkebunan">Dinas Perkebunan</SelectItem>
+                      <SelectItem value="Dinas Komunikasi dan Informatika">Dinas Komunikasi dan Informatika</SelectItem>
+                      <SelectItem value="Lainnya">Lainnya</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
 
-              {/* Dinas */}
-              {selectedUMKM.dinas && (
+              {/* Conditional Kabupaten/Kota Selection */}
+              {isEditMode && (editData.operator || selectedUMKM.operator) === 'Kabupaten/Kota Wilayah Sumatera Selatan' && (
                 <div className="space-y-2">
-                  <Label>Dinas</Label>
+                  <Label>Kabupaten/Kota *</Label>
+                  <Select
+                    value={editData.dinas || selectedUMKM.dinas || ''}
+                    onValueChange={(value) => handleEditChange('dinas', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih Kabupaten/Kota" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Banyuasin">Dinas Koperasi dan UKM Kabupaten Banyuasin</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Empat Lawang">Dinas Koperasi dan UKM Kabupaten Empat Lawang</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Lahat">Dinas Koperasi dan UKM Kabupaten Lahat</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Muara Enim">Dinas Koperasi dan UKM Kabupaten Muara Enim</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Musi Banyuasin">Dinas Koperasi dan UKM Kabupaten Musi Banyuasin</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Musi Rawas">Dinas Koperasi dan UKM Kabupaten Musi Rawas</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Musi Rawas Utara">Dinas Koperasi dan UKM Kabupaten Musi Rawas Utara</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Ogan Ilir">Dinas Koperasi dan UKM Kabupaten Ogan Ilir</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Ogan Komering Ilir">Dinas Koperasi dan UKM Kabupaten Ogan Komering Ilir</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu">Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu Selatan">Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu Selatan</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu Timur">Dinas Koperasi dan UKM Kabupaten Ogan Komering Ulu Timur</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kabupaten Penukal Abab Lematang Ilir">Dinas Koperasi dan UKM Kabupaten Penukal Abab Lematang Ilir</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kota Lubuklinggau">Dinas Koperasi dan UKM Kota Lubuklinggau</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kota Pagar Alam">Dinas Koperasi dan UKM Kota Pagar Alam</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kota Palembang">Dinas Koperasi dan UKM Kota Palembang</SelectItem>
+                      <SelectItem value="Dinas Koperasi dan UKM Kota Prabumulih">Dinas Koperasi dan UKM Kota Prabumulih</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Conditional Stakeholder Selection */}
+              {isEditMode && (editData.operator || selectedUMKM.operator) === 'Stakeholder (Binaan Perusahaan/Lembaga)' && (
+                <div className="space-y-2">
+                  <Label>Stakeholder *</Label>
+                  <Select
+                    value={editData.dinas || selectedUMKM.dinas || ''}
+                    onValueChange={(value) => handleEditChange('dinas', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih Stakeholder" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      <SelectItem value="Kemenkumham">Kemenkumham</SelectItem>
+                      <SelectItem value="Bank Indonesia">Bank Indonesia</SelectItem>
+                      <SelectItem value="Otoritas Jasa Keuangan">Otoritas Jasa Keuangan</SelectItem>
+                      <SelectItem value="Lembaga Pembiayaan Ekspor Indonesia (LPEI)">Lembaga Pembiayaan Ekspor Indonesia (LPEI)</SelectItem>
+                      <SelectItem value="Asosiasi Fintech Pendanaan Bersama Indonesia (AFPI)">Asosiasi Fintech Pendanaan Bersama Indonesia (AFPI)</SelectItem>
+                      <SelectItem value="Asosiasi UMKM Indonesia (AKUMINDO)">Asosiasi UMKM Indonesia (AKUMINDO)</SelectItem>
+                      <SelectItem value="Himpunan Pengusaha Muda Indonesia (HIPMI)">Himpunan Pengusaha Muda Indonesia (HIPMI)</SelectItem>
+                      <SelectItem value="Ikatan Wanita Pengusaha Indonesia (IWAPI)">Ikatan Wanita Pengusaha Indonesia (IWAPI)</SelectItem>
+                      <SelectItem value="Badan Pengawas Obat dan Makanan (BPOM)">Badan Pengawas Obat dan Makanan (BPOM)</SelectItem>
+                      <SelectItem value="Kementerian Agama Sumatera Selatan">Kementerian Agama Sumatera Selatan</SelectItem>
+                      <SelectItem value="Lembaga Sertifikasi Halal (LSH)">Lembaga Sertifikasi Halal (LSH)</SelectItem>
+                      <SelectItem value="Badan Penyelenggara Jaminan Produk Halal (BPJPH)">Badan Penyelenggara Jaminan Produk Halal (BPJPH)</SelectItem>
+                      <SelectItem value="Lainnya (Sebutkan di Keterangan)">Lainnya (Sebutkan di Keterangan)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Kategori */}
+              <div className="space-y-2">
+                <Label>Kategori</Label>
+                {isEditMode ? (
+                  <Select
+                    value={editData.kategori || selectedUMKM.kategori || ''}
+                    onValueChange={(value) => handleEditChange('kategori', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih kategori" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Fashion">Fashion</SelectItem>
+                      <SelectItem value="Kuliner">Kuliner</SelectItem>
+                      <SelectItem value="Kerajinan">Kerajinan</SelectItem>
+                      <SelectItem value="Teknologi">Teknologi</SelectItem>
+                      <SelectItem value="Pertanian">Pertanian</SelectItem>
+                      <SelectItem value="Jasa">Jasa</SelectItem>
+                      <SelectItem value="Lainnya">Lainnya</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <p className="text-muted-foreground">{selectedUMKM.kategori || '-'}</p>
+                )}
+              </div>
+
+              {/* Dinas (Display only when not in edit mode) */}
+              {!isEditMode && selectedUMKM.dinas && (
+                <div className="space-y-2">
+                  <Label>Dinas/Kabupaten/Stakeholder</Label>
                   <p className="text-muted-foreground">{selectedUMKM.dinas}</p>
                 </div>
               )}

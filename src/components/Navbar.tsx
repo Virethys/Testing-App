@@ -1,7 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Crown, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import logo from '@/assets/logo.png';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,9 +36,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-gradient-to-br from-primary to-primary-glow p-2 rounded-lg">
-              <Crown className="h-6 w-6 text-primary-foreground" />
-            </div>
+            <img src={logo} alt="The Real Sultan" className="h-12 w-auto" />
             <div className="flex flex-col">
               <span className="font-bold text-lg text-foreground leading-none">Sultan Muda</span>
               <span className="text-xs text-muted-foreground">Sumatera Selatan</span>

@@ -6,6 +6,7 @@ const {
   approveUMKM,
   rejectUMKM,
   getStats,
+  getOperatorStats,
   getAuditLogs,
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/auth');
@@ -19,6 +20,7 @@ router.get('/umkm', getAllUMKMAdmin);
 router.put('/umkm/:id/approve', approveUMKM);
 router.put('/umkm/:id/reject', rejectUMKM);
 router.get('/stats', getStats);
+router.get('/operator-stats', getOperatorStats);
 router.get('/audit-logs', getAuditLogs);
 
 module.exports = router;

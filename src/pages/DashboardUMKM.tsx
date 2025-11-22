@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { umkmAPI } from '@/lib/api';
+import { useEffect, useState, useRef } from 'react';
+import { umkmAPI, productAPI } from '@/lib/api';
 import Navbar from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Pencil, Save, X, Trash2 } from 'lucide-react';
+import { Pencil, Save, X, Trash2, Plus, Upload, Image as ImageIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const DashboardUMKM = () => {
   const [umkm, setUmkm] = useState<any>(null);
@@ -17,6 +19,19 @@ const DashboardUMKM = () => {
   const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [productForm, setProductForm] = useState({
+    nama: '',
+    deskripsi: '',
+    harga: '',
+    kategori: '',
+    stok: '',
+  });
+  const [productPhoto, setProductPhoto] = useState<File | null>(null);
+  const [productPhotoPreview, setProductPhotoPreview] = useState<string | null>(null);
+  const fotoInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+  const productPhotoRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -123,7 +138,6 @@ const DashboardUMKM = () => {
       await umkmAPI.update(umkm._id, { [type]: '' });
       toast({ title: `${type === 'foto' ? 'Foto profil' : 'Banner'} berhasil dihapus!` });
       
-      // Update both umkm and editData
       const updatedData = { ...umkm, [type]: '' };
       setUmkm(updatedData);
       setEditData(updatedData);
@@ -131,10 +145,98 @@ const DashboardUMKM = () => {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: error.message || 'Gagal menghapus gambar',
+        description: error.message || 'Gagal menghapus file',
       });
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleProductPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Ukuran file maksimal 5MB',
+      });
+      return;
+    }
+
+    setProductPhoto(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProductPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCreateProduct = async () => {
+    try {
+      if (!productForm.nama || !productForm.deskripsi || !productForm.harga || !productForm.kategori) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Mohon lengkapi semua field yang wajib diisi',
+        });
+        return;
+      }
+
+      setIsUploading(true);
+
+      // Create product first
+      const productData = {
+        nama: productForm.nama,
+        deskripsi: productForm.deskripsi,
+        harga: Number(productForm.harga),
+        kategori: productForm.kategori,
+        stok: Number(productForm.stok) || 0,
+      };
+
+      const response = await productAPI.create(productData);
+      const newProduct = response.data;
+
+      // Upload photo if selected
+      if (productPhoto) {
+        await productAPI.uploadImage(newProduct._id, productPhoto);
+      }
+
+      toast({ title: 'Produk berhasil ditambahkan!' });
+      
+      // Reset form and close dialog
+      setProductForm({ nama: '', deskripsi: '', harga: '', kategori: '', stok: '' });
+      setProductPhoto(null);
+      setProductPhotoPreview(null);
+      setIsProductDialogOpen(false);
+      
+      // Refresh UMKM data
+      fetchMyUMKM();
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'Gagal menambahkan produk',
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus produk ini?')) return;
+
+    try {
+      await productAPI.delete(productId);
+      toast({ title: 'Produk berhasil dihapus!' });
+      fetchMyUMKM();
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'Gagal menghapus produk',
+      });
     }
   };
 
@@ -198,6 +300,7 @@ const DashboardUMKM = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Input
+                        ref={bannerInputRef}
                         type="file"
                         accept="image/*"
                         onChange={(e) => handleFileChange(e, 'banner')}
@@ -245,6 +348,7 @@ const DashboardUMKM = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Input
+                        ref={fotoInputRef}
                         type="file"
                         accept="image/*"
                         onChange={(e) => handleFileChange(e, 'foto')}
@@ -428,26 +532,199 @@ const DashboardUMKM = () => {
           </Card>
 
           {/* Products Section */}
-          {umkm.products && umkm.products.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Produk</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {umkm.products.map((product: any) => (
-                    <div key={product._id} className="border rounded-lg p-4">
-                      <h3 className="font-semibold">{product.nama}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">{product.deskripsi}</p>
-                      <p className="text-primary font-semibold mt-2">
-                        Rp {product.harga?.toLocaleString('id-ID')}
-                      </p>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle>Produk</CardTitle>
+              <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    Tambah Produk
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Tambah Produk Baru</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    {/* Product Photo Upload */}
+                    <div className="space-y-2">
+                      <Label>Foto Produk</Label>
+                      <div className="flex flex-col gap-2">
+                        {productPhotoPreview ? (
+                          <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-muted">
+                            <img
+                              src={productPhotoPreview}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                            />
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="absolute top-2 right-2"
+                              onClick={() => {
+                                setProductPhoto(null);
+                                setProductPhotoPreview(null);
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div
+                            className="w-full aspect-video rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2"
+                            onClick={() => productPhotoRef.current?.click()}
+                          >
+                            <ImageIcon className="w-12 h-12 text-muted-foreground" />
+                            <p className="text-sm text-muted-foreground">Klik untuk upload foto</p>
+                          </div>
+                        )}
+                        <input
+                          ref={productPhotoRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleProductPhotoChange}
+                          className="hidden"
+                        />
+                      </div>
                     </div>
+
+                    {/* Product Name */}
+                    <div className="space-y-2">
+                      <Label htmlFor="nama">Nama Produk *</Label>
+                      <Input
+                        id="nama"
+                        value={productForm.nama}
+                        onChange={(e) => setProductForm({ ...productForm, nama: e.target.value })}
+                        placeholder="Masukkan nama produk"
+                      />
+                    </div>
+
+                    {/* Description */}
+                    <div className="space-y-2">
+                      <Label htmlFor="deskripsi">Deskripsi *</Label>
+                      <Textarea
+                        id="deskripsi"
+                        value={productForm.deskripsi}
+                        onChange={(e) => setProductForm({ ...productForm, deskripsi: e.target.value })}
+                        placeholder="Masukkan deskripsi produk"
+                        rows={4}
+                      />
+                    </div>
+
+                    {/* Price */}
+                    <div className="space-y-2">
+                      <Label htmlFor="harga">Harga *</Label>
+                      <Input
+                        id="harga"
+                        type="number"
+                        value={productForm.harga}
+                        onChange={(e) => setProductForm({ ...productForm, harga: e.target.value })}
+                        placeholder="Masukkan harga"
+                      />
+                    </div>
+
+                    {/* Category */}
+                    <div className="space-y-2">
+                      <Label htmlFor="kategori">Kategori *</Label>
+                      <Select
+                        value={productForm.kategori}
+                        onValueChange={(value) => setProductForm({ ...productForm, kategori: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih kategori" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Makanan & Minuman">Makanan & Minuman</SelectItem>
+                          <SelectItem value="Fashion & Pakaian">Fashion & Pakaian</SelectItem>
+                          <SelectItem value="Kerajinan Tangan">Kerajinan Tangan</SelectItem>
+                          <SelectItem value="Jasa">Jasa</SelectItem>
+                          <SelectItem value="Pertanian">Pertanian</SelectItem>
+                          <SelectItem value="Teknologi">Teknologi</SelectItem>
+                          <SelectItem value="Lainnya">Lainnya</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Stock */}
+                    <div className="space-y-2">
+                      <Label htmlFor="stok">Stok</Label>
+                      <Input
+                        id="stok"
+                        type="number"
+                        value={productForm.stok}
+                        onChange={(e) => setProductForm({ ...productForm, stok: e.target.value })}
+                        placeholder="Masukkan jumlah stok"
+                      />
+                    </div>
+
+                    <div className="flex gap-2 pt-4">
+                      <Button onClick={handleCreateProduct} disabled={isUploading} className="flex-1">
+                        {isUploading ? 'Menyimpan...' : 'Simpan Produk'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsProductDialogOpen(false);
+                          setProductForm({ nama: '', deskripsi: '', harga: '', kategori: '', stok: '' });
+                          setProductPhoto(null);
+                          setProductPhotoPreview(null);
+                        }}
+                      >
+                        Batal
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent>
+              {umkm.products && umkm.products.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {umkm.products.map((product: any) => (
+                    <Card key={product._id} className="overflow-hidden">
+                      {product.foto && product.foto !== '/placeholder.svg' && (
+                        <div className="aspect-video w-full overflow-hidden bg-muted">
+                          <img
+                            src={product.foto}
+                            alt={product.nama}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <h3 className="font-semibold text-lg">{product.nama}</h3>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDeleteProduct(product._id)}
+                          >
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                          {product.deskripsi}
+                        </p>
+                        <p className="font-bold text-primary">
+                          Rp {product.harga?.toLocaleString('id-ID')}
+                        </p>
+                        {product.stok !== undefined && (
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Stok: {product.stok}
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Belum ada produk. Tambahkan produk pertama Anda!</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

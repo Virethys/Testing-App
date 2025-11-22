@@ -176,6 +176,52 @@ exports.getStats = async (req, res) => {
   }
 };
 
+// @desc    Get operator statistics
+// @route   GET /api/admin/operator-stats
+// @access  Private (Admin only)
+exports.getOperatorStats = async (req, res) => {
+  try {
+    const { operator } = req.query;
+
+    // Get operator statistics (global)
+    const operatorStats = await UMKM.aggregate([
+      { $match: { status: 'approved' } },
+      { $group: { _id: '$operator', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    let detailStats = null;
+    
+    // If operator is specified, get detail stats by dinas
+    if (operator) {
+      detailStats = await UMKM.aggregate([
+        { 
+          $match: { 
+            status: 'approved',
+            operator: operator 
+          } 
+        },
+        { $group: { _id: '$dinas', count: { $sum: 1 } } },
+        { $sort: { count: -1 } }
+      ]);
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        operatorStats,
+        detailStats,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching operator statistics',
+      error: error.message,
+    });
+  }
+};
+
 // @desc    Get audit logs
 // @route   GET /api/admin/audit-logs
 // @access  Private (Admin only)

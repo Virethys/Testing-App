@@ -79,7 +79,7 @@ export const umkmAPI = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch(`${API_URL}/upload/${id}/${type}`, {
+    const response = await fetch(`${API_URL}/upload/umkm/${id}/${type}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -119,6 +119,28 @@ export const productAPI = {
     apiCall(`/products/${id}`, {
       method: 'DELETE',
     }),
+
+  uploadImage: async (id: string, file: File) => {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_URL}/upload/product/${id}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Upload failed');
+    }
+
+    return data;
+  },
 };
 
 // Admin API
@@ -141,6 +163,11 @@ export const adminAPI = {
     }),
 
   getStats: () => apiCall('/admin/stats'),
+  
+  getOperatorStats: (operator?: string) => {
+    const params = operator ? `?operator=${encodeURIComponent(operator)}` : '';
+    return apiCall(`/admin/operator-stats${params}`);
+  },
   
   getAuditLogs: (limit?: number) => {
     const params = limit ? `?limit=${limit}` : '';

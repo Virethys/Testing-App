@@ -37,21 +37,7 @@ const umkmSchema = new mongoose.Schema({
   },
   dinas: {
     type: String,
-    enum: [
-      'Dinas Koperasi dan UKM',
-      'Dinas Pertanian',
-      'Dinas Perkebunan',
-      'Dinas Perikanan dan Kelautan',
-      'Dinas Pendidikan',
-      'Dinas Perindustrian',
-      'Dinas Kebudayaan dan Pariwisata',
-      'Dinas Perdagangan',
-      'Dinas Pemuda dan Olahraga',
-      'Dinas PPA',
-      'DPMPTSP Sumsel',
-      'OPD Kabupaten/Kota di Wilayah Sumsel',
-      'Perguruan Tinggi di Wilayah Sumsel'
-    ],
+    trim: true,
   },
   deskripsi: {
     type: String,

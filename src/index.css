@@ -17,10 +17,10 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 185 30% 15%;
 
-    --primary: 185 65% 35%;
+    --primary: 220 70% 35%;
     --primary-foreground: 0 0% 100%;
     
-    --primary-glow: 185 75% 45%;
+    --primary-glow: 220 80% 45%;
 
     --secondary: 45 95% 55%;
     --secondary-foreground: 185 30% 15%;
@@ -34,15 +34,15 @@ All colors MUST be HSL.
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 185 20% 90%;
-    --input: 185 20% 90%;
-    --ring: 185 65% 35%;
+    --border: 220 20% 90%;
+    --input: 220 20% 90%;
+    --ring: 220 70% 35%;
 
     --radius: 0.75rem;
     
-    --gradient-primary: linear-gradient(135deg, hsl(185 65% 35%), hsl(185 75% 45%));
+    --gradient-primary: linear-gradient(135deg, hsl(220 70% 35%), hsl(220 80% 45%));
     --gradient-gold: linear-gradient(135deg, hsl(45 95% 55%), hsl(45 95% 65%));
-    --shadow-elegant: 0 10px 30px -10px hsl(185 65% 35% / 0.3);
+    --shadow-elegant: 0 10px 30px -10px hsl(220 70% 35% / 0.3);
 
     --sidebar-background: 0 0% 98%;
 
@@ -71,10 +71,10 @@ All colors MUST be HSL.
     --popover: 185 25% 15%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 185 75% 45%;
+    --primary: 220 80% 45%;
     --primary-foreground: 0 0% 100%;
     
-    --primary-glow: 185 75% 55%;
+    --primary-glow: 220 85% 55%;
 
     --secondary: 45 95% 55%;
     --secondary-foreground: 185 30% 10%;
@@ -88,13 +88,13 @@ All colors MUST be HSL.
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 185 20% 25%;
-    --input: 185 20% 25%;
-    --ring: 185 75% 45%;
+    --border: 220 20% 25%;
+    --input: 220 20% 25%;
+    --ring: 220 80% 45%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(185 75% 35%), hsl(185 75% 45%));
+    --gradient-primary: linear-gradient(135deg, hsl(220 80% 35%), hsl(220 85% 45%));
     --gradient-gold: linear-gradient(135deg, hsl(45 95% 55%), hsl(45 95% 65%));
-    --shadow-elegant: 0 10px 30px -10px hsl(185 75% 45% / 0.4);
+    --shadow-elegant: 0 10px 30px -10px hsl(220 80% 45% / 0.4);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

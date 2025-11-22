@@ -1,5 +1,6 @@
-import { Crown, Mail, Phone, Instagram, Facebook } from 'lucide-react';
+import { Mail, Phone, Instagram, Facebook } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import logo from '@/assets/logo.png';
 
 const Footer = () => {
   return (
@@ -8,10 +9,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo & Description */}
           <div className="md:col-span-2">
-            <Link to="/" className="flex items-center space-x-2 mb-4">
-              <div className="bg-gradient-to-br from-primary to-primary-glow p-2 rounded-lg">
-                <Crown className="h-6 w-6 text-primary-foreground" />
-              </div>
+            <Link to="/" className="flex items-center space-x-3 mb-4">
+              <img src={logo} alt="Logo Sultan Muda" className="h-12 w-auto" />
               <div className="flex flex-col">
                 <span className="font-bold text-lg text-foreground">100.000 Sultan Muda</span>
                 <span className="text-sm text-muted-foreground">Sumatera Selatan</span>

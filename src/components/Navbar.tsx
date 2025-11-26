@@ -48,7 +48,15 @@ const Navbar = () => {
             <Link to="/" className="text-foreground hover:text-primary transition-colors">
               Home
             </Link>
-            <a href="/#about" className="text-foreground hover:text-primary transition-colors">
+            <a 
+              href="#about" 
+              onClick={(e) => {
+                e.preventDefault();
+                const element = document.getElementById('about');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-foreground hover:text-primary transition-colors cursor-pointer"
+            >
               Tentang
             </a>
             <Link to="/umkm" className="text-foreground hover:text-primary transition-colors">
@@ -95,9 +103,14 @@ const Navbar = () => {
                 Home
               </Link>
               <a
-                href="/#about"
-                className="text-foreground hover:text-primary transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+                href="#about"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  const element = document.getElementById('about');
+                  element?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="text-foreground hover:text-primary transition-colors cursor-pointer"
               >
                 Tentang
               </a>

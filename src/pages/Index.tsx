@@ -9,6 +9,10 @@ import UMKMCard from '@/components/UMKMCard';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import logo from '@/assets/logo.png';
+import realSultan from '@/assets/real-sultan.png';
+import students from '@/assets/students.png';
+import hermanDeru from '@/assets/herman-deru.png';
+import astaCitaInfographic from '@/assets/asta-cita-infographic.png';
 import {
   Carousel,
   CarouselContent,
@@ -459,54 +463,273 @@ const Index = () => {
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-20 bg-muted/50">
+      {/* Program 100.000 Sultan Muda Sumatera Selatan */}
+      <section id="about" className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-8 max-w-4xl mx-auto"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Tentang Program</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Program 100.000 Sultan Muda Sumatera Selatan adalah inisiatif pemberdayaan UMKM muda
-              untuk menciptakan ekosistem wirausaha yang kuat di Sumatera Selatan
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Program 100.000 Sultan Muda<br />Sumatera Selatan
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground mb-6 text-justify">
+              Sultan Muda Sumatera Selatan adalah generasi muda penuh semangat, berjiwa wirausaha, 
+              dan siap menciptakan inovasi demi kemajuan daerah. Program ini ditujukan bagi individu 
+              berusia 17 hingga 40 tahun yang telah menjalankan usaha atau memiliki ide bisnis berdampak 
+              positif. Tak hanya itu, peserta diharapkan memiliki komitmen kuat untuk membangun Sumatera 
+              Selatan, serta mampu bekerja sama dan memperluas jaringan demi memperbesar manfaat 
+              yang dihasilkan.
+            </p>
+            <p className="text-base md:text-lg text-muted-foreground text-justify">
+              Proses perekrutan <strong>Sultan Muda Sumatera Selatan</strong> dimulai dengan <strong>sosialisasi dan promosi</strong> melalui 
+              kampanye media sosial, kolaborasi dengan sekolah dan kampus, serta penyelenggaraan 
+              seminar dan event untuk meningkatkan <strong>kesadaran</strong> dan <strong>ketertarikan peserta</strong>. Setelah itu, 
+              dilanjutkan dengan <strong>pendaftaran dan seleksi</strong> yang dapat dilakukan secara online maupun 
+              offline, diikuti dengan <strong>seleksi administratif</strong> untuk memastikan kelayakan peserta. Tahap 
+              akhir adalah <strong>wawancara dan studi kasus</strong> yang bertujuan menilai <strong>motivasi</strong>, <strong>kemampuan 
+              komunikasi</strong>, dan <strong>ide bisnis</strong> yang diajukan oleh calon peserta, sehingga hanya <strong>kandidat 
+              terbaik</strong> yang akan dipilih untuk mengikuti program.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Program Resmi Dimulai Section */}
+      <section className="py-20 bg-muted/50">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Program 100.000 Sultan Muda<br />Sumsel Resmi Dimulai
+            </h2>
+            <div className="flex justify-center mb-8">
+              <img 
+                src={realSultan} 
+                alt="The Real Sultan - Program Launch" 
+                className="max-w-md w-full h-auto rounded-lg shadow-lg"
+              />
+            </div>
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto text-justify">
+              Program <strong>100.000 Sultan Muda Sumatera Selatan</strong> resmi dimulai untuk menciptakan 
+              pengusaha-pengusaha muda dalam menggeliatkan ekonomi. <strong>Gubernur Sumatera Selatan 
+              Herman Deru</strong> pada Jumat (16/5) menyebut, melalui program ini juga diharapkan bisa 
+              menciptakan <strong>lapangan kerja</strong>. Di tahun ini, target program ini dapat menciptakan <strong>sepuluh ribu 
+              wirausaha muda</strong>. Dikutip dari sumsel.antaranews.com.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Asta Cita Section */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-2">
+              Asta Cita Presiden Republik Indonesia
+            </h2>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8">
+              Program Strategis HDCU 2025–2029
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Users,
-                title: 'Pemberdayaan UMKM',
-                description: 'Memberikan pelatihan dan pendampingan untuk UMKM muda berkembang',
-              },
-              {
-                icon: TrendingUp,
-                title: 'Peningkatan Kapasitas',
-                description: 'Meningkatkan kemampuan bisnis dan manajemen UMKM',
-              },
-              {
-                icon: Award,
-                title: 'Sertifikasi & Legalitas',
-                description: 'Membantu proses legalitas dan sertifikasi usaha',
-              },
-            ].map((item, index) => (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start max-w-6xl mx-auto">
+            {/* Left Column - Infographic */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="flex justify-center"
+            >
+              <img 
+                src={astaCitaInfographic} 
+                alt="Asta Cita Presiden Prabowo & Wapres Gibran" 
+                className="w-full max-w-md h-auto rounded-lg shadow-lg"
+              />
+            </motion.div>
+
+            {/* Right Column - Content */}
+            <div className="space-y-8">
               <motion.div
-                key={index}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="bg-card p-6 rounded-lg shadow-lg"
+              >
+                <h3 className="text-xl font-bold mb-4">
+                  Mendukung Asta Cita Presiden Republik Indonesia Tahun 2025, Menuju Indonesia Emas 2045.
+                </h3>
+                <div className="space-y-3 text-muted-foreground">
+                  <p className="text-sm">
+                    Program ini selaras dengan Asta Cita Presiden Prabowo dan Wapres Gibran, khususnya:
+                  </p>
+                  <ul className="list-disc pl-6 space-y-2 text-sm">
+                    <li>Poin 3: Mendorong kewirausahaan dan industri kreatif untuk membuka lapangan kerja.</li>
+                    <li>Poin 4: Memperkuat SDM, pendidikan, teknologi, serta peran pemuda dan perempuan.</li>
+                    <li>Poin 6: Membangun dari desa untuk pemerataan ekonomi dan pengentasan kemiskinan.</li>
+                  </ul>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="bg-card rounded-lg overflow-hidden shadow-lg"
+              >
+                <div className="relative h-64">
+                  <img 
+                    src={hermanDeru} 
+                    alt="Herman Deru - Gubernur Sumatera Selatan" 
+                    className="w-full h-full object-cover object-top"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
+                </div>
+                <div className="p-6 bg-card">
+                  <h3 className="text-lg font-bold mb-3">
+                    Herman Deru Meluncurkan 12 Program Strategis HDCU Untuk Mewujudkan Sumsel Yang Lebih Maju
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Mencetak 100.000 'Sultan' Muda atau Wirausaha Muda Sumsel. Program ini bertujuan untuk 
+                    menciptakan generasi wirausaha yang tangguh dengan menyediakan pelatihan, bimbingan, 
+                    dan akses modal bagi anak muda. Dengan semangat entrepreneurship, diharapkan tercipta 
+                    lapangan kerja baru dan meningkatkan daya saing ekonomi lokal, serta membangun iklim 
+                    bisnis yang kondusif di Sumsel.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Hero Image Section */}
+      <section className="relative py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background/80 to-secondary/20" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDJ2LTJoMzR6bS0yLTJIMnYtMmgzMnYyek0zNiAyOHYySDJ2LTJoMzR6bS0yLTJIMnYtMmgzMnYyem0yLTR2Mkgydi0yaDM0ek0zNCAxOEgydi0yaDMydjJ6bTItNHYySDJ2LTJoMzR6TTM0IDEwSDJ2LTJIM3YyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-20" />
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center max-w-4xl mx-auto"
+          >
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-foreground">
+              Mencetak dan menumbuhkan generasi baru wirausahawan muda yang kompetitif berasal dari 
+              Sumatera Selatan melalui inisiatif inovatif Pemerintah.
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
+              Program ini bertujuan menumbuhkan generasi wirausahawan muda yang kompetitif dari Sumatera Selatan. 
+              Inisiatif ini lahir dari komitmen pemerintah untuk mendorong inovasi dan kemandirian ekonomi daerah. 
+              Melalui pendekatan kreatif dan kolaboratif, program ini membuka peluang bagi ide-ide bisnis berdampak positif.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Business Ideas Section */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="order-2 lg:order-1"
+            >
+              <img 
+                src={students} 
+                alt="Program Pelatihan Sultan Muda" 
+                className="w-full h-auto rounded-lg shadow-lg"
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="order-1 lg:order-2"
+            >
+              <p className="text-sm uppercase tracking-wider text-primary mb-4">
+                TRANSFORMING ASPIRATIONS INTO REALITY
+              </p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Menampung Ide Bisnis & Nilai Tambah Usaha
+              </h2>
+              <p className="text-base text-muted-foreground mb-8">
+                Program 100.000 Sultan Muda Sumsel menyediakan program bimbingan dan pelatihan yang disesuaikan 
+                wirausaha muda.
+              </p>
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
+                Bergabung Sultan Muda
+              </Button>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Berita Terbaru Section */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between mb-12">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-2">Berita Terbaru Sumatera Selatan</h2>
+              <p className="text-muted-foreground">Update terkini seputar program dan kegiatan Sultan Muda</p>
+            </div>
+            <Button variant="outline">
+              Lihat Semua
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((item) => (
+              <motion.div
+                key={item}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={{ duration: 0.5, delay: item * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-card p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                className="bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer group"
               >
-                <div className="bg-gradient-to-br from-primary to-primary-glow p-3 rounded-lg w-fit mb-4">
-                  <item.icon className="h-6 w-6 text-primary-foreground" />
+                <div className="relative h-48 bg-muted overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                <p className="text-muted-foreground">{item.description}</p>
+                <div className="p-6">
+                  <div className="text-xs text-primary mb-2">
+                    {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </div>
+                  <h3 className="text-lg font-bold mb-3 group-hover:text-primary transition-colors">
+                    Berita Program Sultan Muda {item}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Informasi terbaru mengenai perkembangan program 100.000 Sultan Muda Sumatera Selatan dan berbagai kegiatan pendukungnya.
+                  </p>
+                  <Button variant="link" className="p-0 h-auto">
+                    Baca Selengkapnya <ChevronRight className="ml-1 h-4 w-4" />
+                  </Button>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -514,12 +737,12 @@ const Index = () => {
       </section>
 
       {/* UMKM Carousel Section */}
-      <section className="py-20">
+      <section className="py-20 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-2">UMKM Terdaftar</h2>
-              <p className="text-muted-foreground">Jelajahi UMKM muda di Sumatera Selatan</p>
+              <h2 className="text-3xl md:text-4xl font-bold mb-2">UMKM Sultan Muda</h2>
+              <p className="text-muted-foreground">Jelajahi dan dukung UMKM muda di Sumatera Selatan</p>
             </div>
             <Link to="/umkm">
               <Button variant="outline">
@@ -554,22 +777,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Partners Section */}
-      <section className="py-20 bg-muted/50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Didukung Oleh</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="bg-card p-6 rounded-lg shadow-md flex items-center justify-center h-32"
-              >
-                <span className="text-muted-foreground">Logo Partner {i}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <Footer />
     </div>

@@ -299,11 +299,6 @@ const DashboardAdmin = () => {
     );
   }
 
-  const chartData = stats?.categoryStats?.map((cat: any, index: number) => ({
-    name: cat._id || 'Tidak Ada Kategori',
-    value: cat.count,
-    color: COLORS[index % COLORS.length],
-  })) || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -350,36 +345,6 @@ const DashboardAdmin = () => {
             </div>
           )}
 
-          {/* Category Pie Chart */}
-          {chartData.length > 0 && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Distribusi Kategori UMKM (Approved)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {chartData.map((entry: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          )}
 
           <Tabs defaultValue="pending" className="w-full">
             <TabsList>
@@ -980,31 +945,6 @@ const DashboardAdmin = () => {
                 </div>
               )}
 
-              {/* Kategori */}
-              <div className="space-y-2">
-                <Label>Kategori</Label>
-                {isEditMode ? (
-                  <Select
-                    value={editData.kategori || selectedUMKM.kategori || ''}
-                    onValueChange={(value) => handleEditChange('kategori', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih kategori" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Fashion">Fashion</SelectItem>
-                      <SelectItem value="Kuliner">Kuliner</SelectItem>
-                      <SelectItem value="Kerajinan">Kerajinan</SelectItem>
-                      <SelectItem value="Teknologi">Teknologi</SelectItem>
-                      <SelectItem value="Pertanian">Pertanian</SelectItem>
-                      <SelectItem value="Jasa">Jasa</SelectItem>
-                      <SelectItem value="Lainnya">Lainnya</SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <p className="text-muted-foreground">{selectedUMKM.kategori || '-'}</p>
-                )}
-              </div>
 
               {/* Dinas (Display only when not in edit mode) */}
               {!isEditMode && selectedUMKM.dinas && (
@@ -1015,37 +955,79 @@ const DashboardAdmin = () => {
               )}
 
               {/* Kontak */}
-              {selectedUMKM.kontak && (
-                <div className="space-y-2">
-                  <Label className="text-base font-semibold">Informasi Kontak</Label>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    {selectedUMKM.kontak.whatsapp && (
-                      <div>
-                        <Label className="text-xs">WhatsApp</Label>
-                        <p className="text-muted-foreground">{selectedUMKM.kontak.whatsapp}</p>
-                      </div>
-                    )}
-                    {selectedUMKM.kontak.email && (
-                      <div>
-                        <Label className="text-xs">Email</Label>
-                        <p className="text-muted-foreground">{selectedUMKM.kontak.email}</p>
-                      </div>
-                    )}
-                    {selectedUMKM.kontak.instagram && (
-                      <div>
-                        <Label className="text-xs">Instagram</Label>
-                        <p className="text-muted-foreground">{selectedUMKM.kontak.instagram}</p>
-                      </div>
-                    )}
-                    {selectedUMKM.kontak.facebook && (
-                      <div>
-                        <Label className="text-xs">Facebook</Label>
-                        <p className="text-muted-foreground">{selectedUMKM.kontak.facebook}</p>
-                      </div>
-                    )}
+              <div className="space-y-4">
+                <Label className="text-base font-semibold">Informasi Kontak</Label>
+                
+                {isEditMode ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm">WhatsApp</Label>
+                      <Input
+                        value={editData.kontak?.whatsapp || ''}
+                        onChange={(e) => handleEditChange('kontak', { ...editData.kontak, whatsapp: e.target.value })}
+                        placeholder="08123456789"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm">Email</Label>
+                      <Input
+                        value={editData.kontak?.email || ''}
+                        onChange={(e) => handleEditChange('kontak', { ...editData.kontak, email: e.target.value })}
+                        placeholder="email@example.com"
+                        type="email"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm">Instagram</Label>
+                      <Input
+                        value={editData.kontak?.instagram || ''}
+                        onChange={(e) => handleEditChange('kontak', { ...editData.kontak, instagram: e.target.value })}
+                        placeholder="@username"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm">Facebook</Label>
+                      <Input
+                        value={editData.kontak?.facebook || ''}
+                        onChange={(e) => handleEditChange('kontak', { ...editData.kontak, facebook: e.target.value })}
+                        placeholder="username"
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                ) : (
+                  selectedUMKM.kontak && (
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      {selectedUMKM.kontak.whatsapp && (
+                        <div>
+                          <Label className="text-xs">WhatsApp</Label>
+                          <p className="text-muted-foreground">{selectedUMKM.kontak.whatsapp}</p>
+                        </div>
+                      )}
+                      {selectedUMKM.kontak.email && (
+                        <div>
+                          <Label className="text-xs">Email</Label>
+                          <p className="text-muted-foreground">{selectedUMKM.kontak.email}</p>
+                        </div>
+                      )}
+                      {selectedUMKM.kontak.instagram && (
+                        <div>
+                          <Label className="text-xs">Instagram</Label>
+                          <p className="text-muted-foreground">{selectedUMKM.kontak.instagram}</p>
+                        </div>
+                      )}
+                      {selectedUMKM.kontak.facebook && (
+                        <div>
+                          <Label className="text-xs">Facebook</Label>
+                          <p className="text-muted-foreground">{selectedUMKM.kontak.facebook}</p>
+                        </div>
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
             </div>
           )}
 

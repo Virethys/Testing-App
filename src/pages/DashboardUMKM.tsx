@@ -24,7 +24,6 @@ const DashboardUMKM = () => {
     nama: '',
     deskripsi: '',
     harga: '',
-    kategori: '',
     stok: '',
   });
   const [productPhoto, setProductPhoto] = useState<File | null>(null);
@@ -175,7 +174,7 @@ const DashboardUMKM = () => {
 
   const handleCreateProduct = async () => {
     try {
-      if (!productForm.nama || !productForm.deskripsi || !productForm.harga || !productForm.kategori) {
+      if (!productForm.nama || !productForm.deskripsi || !productForm.harga) {
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -191,7 +190,6 @@ const DashboardUMKM = () => {
         nama: productForm.nama,
         deskripsi: productForm.deskripsi,
         harga: Number(productForm.harga),
-        kategori: productForm.kategori,
         stok: Number(productForm.stok) || 0,
       };
 
@@ -206,7 +204,7 @@ const DashboardUMKM = () => {
       toast({ title: 'Produk berhasil ditambahkan!' });
       
       // Reset form and close dialog
-      setProductForm({ nama: '', deskripsi: '', harga: '', kategori: '', stok: '' });
+      setProductForm({ nama: '', deskripsi: '', harga: '', stok: '' });
       setProductPhoto(null);
       setProductPhotoPreview(null);
       setIsProductDialogOpen(false);
@@ -624,28 +622,6 @@ const DashboardUMKM = () => {
                       />
                     </div>
 
-                    {/* Category */}
-                    <div className="space-y-2">
-                      <Label htmlFor="kategori">Kategori *</Label>
-                      <Select
-                        value={productForm.kategori}
-                        onValueChange={(value) => setProductForm({ ...productForm, kategori: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Pilih kategori" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Makanan & Minuman">Makanan & Minuman</SelectItem>
-                          <SelectItem value="Fashion & Pakaian">Fashion & Pakaian</SelectItem>
-                          <SelectItem value="Kerajinan Tangan">Kerajinan Tangan</SelectItem>
-                          <SelectItem value="Jasa">Jasa</SelectItem>
-                          <SelectItem value="Pertanian">Pertanian</SelectItem>
-                          <SelectItem value="Teknologi">Teknologi</SelectItem>
-                          <SelectItem value="Lainnya">Lainnya</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
                     {/* Stock */}
                     <div className="space-y-2">
                       <Label htmlFor="stok">Stok</Label>
@@ -666,7 +642,7 @@ const DashboardUMKM = () => {
                         variant="outline"
                         onClick={() => {
                           setIsProductDialogOpen(false);
-                          setProductForm({ nama: '', deskripsi: '', harga: '', kategori: '', stok: '' });
+                          setProductForm({ nama: '', deskripsi: '', harga: '', stok: '' });
                           setProductPhoto(null);
                           setProductPhotoPreview(null);
                         }}

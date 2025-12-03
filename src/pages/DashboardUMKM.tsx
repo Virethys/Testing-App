@@ -190,6 +190,7 @@ const DashboardUMKM = () => {
         nama: productForm.nama,
         deskripsi: productForm.deskripsi,
         harga: Number(productForm.harga),
+        kategori: 'Lainnya',
         stok: Number(productForm.stok) || 0,
       };
 
